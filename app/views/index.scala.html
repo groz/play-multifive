@@ -4,4 +4,25 @@
 
     <h1>Lobby</h1>
 
+    <div ng-app="GameApp">
+
+        <div ng-controller="GameController as game">
+
+            <div ng-if="game.started">
+
+                <span ng-if="game.myturn">MY TURN</span>
+
+                <table style="border:solid">
+                    <tr ng-repeat="row in game.field track by $index" ng-value="rowIndex=$index">
+                        <td ng-repeat="field in row track by $index" ng-click="game.fieldClicked(rowIndex, $index)">
+                            {{field}}
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 }

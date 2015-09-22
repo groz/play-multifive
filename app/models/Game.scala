@@ -14,21 +14,28 @@ class Game(p1: ActorRef, p2: ActorRef) extends Actor {
     field.map(a => a.count(_ == v)).sum > 7
   }
 
+  p1 ! GameStarted(FIELD_SIZE, true)
+  p2 ! GameStarted(FIELD_SIZE, false)
 
   def process(turnOwner: ActorRef): Receive = {
 
     case GameMove(i,j) =>
-      if (field(i)(j) != 0) {
+      if (field(i)(j) == 0) {
+        val other = (Set(p1,p2) - turnOwner).head
+        other ! GameMove(i, j)
+
         // make move
         val v = if (turnOwner == p1) 1 else 2
         field(i)(j) = v
+
         // check if win
         if (checkIfWin(field, v)) {
           turnOwner ! WinMessage("Win!")
-          (Set(p1,p2) - turnOwner).head ! LoseMessage("Lose!")
+          other ! LoseMessage("Lose!")
         }
-        else
+        else {
           context become process(if (v==1) p2 else p1)
+        }
       }
       else {
         // abort
