@@ -1,13 +1,23 @@
 package models
 
-import akka.actor.Actor
+import akka.actor.{Props, ActorRef, Actor}
 
 class Lobby extends Actor {
 
-  override def receive: Receive = {
+  override def receive: Receive = process(Set.empty)
 
-    case msg =>
-      println(s"Lobby couldn't handle message $msg")
+  def process(actors: Set[ActorRef]): Receive = {
+    case JoinLobby =>
+      if (actors.size > 0) {
+        context.actorOf(Props(classOf[Game], actors.head, sender))
+        context become process(Set.empty)
+      }
+      else
+        context become process(actors + sender)
+
+
+    case LeaveLobby =>
+      context become process(actors - sender)
 
   }
 
