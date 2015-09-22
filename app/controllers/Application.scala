@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.Inject
+import javax.inject._
 
 import akka.actor._
 import models.{Lobby, ClientProxy}
